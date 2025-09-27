@@ -50,8 +50,7 @@ public class gallerie {
                 }
             }
         }
-        System.out.println("Triage done");
-        System.out.println(this.toString());
+        System.out.println("\nTriage fini\n");
     }
 
     public ArrayList<ArrayList<img>> grouperSimilaires(int diff, double prct_max, int algo) {
@@ -99,6 +98,11 @@ public class gallerie {
                         imgRep.remove(k);
                     }
                 }
+        }
+        for (int i = 0; i < groupes.size(); i++) {
+            if (groupes.get(i).size() == 1) {
+                groupes.remove(i);
+            }
         }
             return groupes;
     }

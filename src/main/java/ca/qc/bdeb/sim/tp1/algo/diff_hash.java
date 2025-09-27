@@ -20,7 +20,7 @@ public class diff_hash {
         this.seuil = seuil;
     }
 
-    private String calculerHash(img a) {
+    public String calculerHash(img a) {
         try {
             BufferedImage img = GestionnaireImages.lireImage(a.getChemin());
 
