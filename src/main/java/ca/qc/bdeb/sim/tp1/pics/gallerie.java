@@ -66,45 +66,45 @@ public class gallerie {
 
         while (imgRep.size() > 0) {
             img currImg = imgRep.get(0);
-            groupes.add(new ArrayList<img>());
-            groupes.get(groupes.size() - 1).add(currImg);
-            imgRep.remove(0);
+            ArrayList<img> groupe = new ArrayList<img>();
+            groupe.add(currImg);
 
-            int[] indexToRemove = new int[imgRep.size()];
-            for (int j = 0; j < imgRep.size(); j++) {
+            // Collection d'images a enlever (pas par indexe cette fois)
+            List<img> prEnlever = new ArrayList<img>();
+            // Commence j=1 car currImg est j=0 et est deja dans le groupe
+            for (int j = 1; j < imgRep.size(); j++) {
+                img candidate = imgRep.get(j);
+                boolean similaire = false;
                 switch (algo) {
                     case 1:
-                        if (moy_hash.comparaisonHash(imgRep.get(j), currImg)) {
-                            groupes.get(groupes.size() - 1).add(imgRep.get(j));
-                            indexToRemove[j] = 1;
+                        if (moy_hash.comparaisonHash(candidate, currImg)) {
+                            similaire = true;
                         }
                         break;
                     case 2:
-                        if (diff_hash.comparaisonHash(imgRep.get(j), currImg)) {
-                            groupes.get(groupes.size() - 1).add(imgRep.get(j));
-                            indexToRemove[j] = 1;
+                        if (diff_hash.comparaisonHash(candidate, currImg)) {
+                            similaire = true;
                         }
                         break;
                     case 3:
-                        if (comp_pixels.comparaisonPixels(imgRep.get(j), currImg)) {
-                            groupes.get(groupes.size() - 1).add(imgRep.get(j));
-                            indexToRemove[j] = 1;
+                        if (comp_pixels.comparaisonPixels(candidate, currImg)) {
+                            similaire = true;
                         }
                         break;
-                }    
-            }
-                for (int k = 0; k < imgRep.size(); k++) {
-                    if (indexToRemove[k] == 1) {
-                        imgRep.remove(k);
-                    }
                 }
-        }
-        for (int i = 0; i < groupes.size(); i++) {
-            if (groupes.get(i).size() == 1) {
-                groupes.remove(i);
+                if (similaire) {
+                    groupe.add(candidate);
+                    prEnlever.add(candidate);
+                }
             }
+            // On enleve tt les images du groupe
+            imgRep.removeAll(prEnlever);
+            imgRep.remove(currImg);
+
+            // et on ajoute le groupe a la liste
+            groupes.add(groupe);
         }
-            return groupes;
+        return groupes;
     }
     
     
