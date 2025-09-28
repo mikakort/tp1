@@ -73,28 +73,28 @@ public class gallerie {
             List<img> prEnlever = new ArrayList<img>();
             // Commence j=1 car currImg est j=0 et est deja dans le groupe
             for (int j = 1; j < imgRep.size(); j++) {
-                img candidate = imgRep.get(j);
+                img comparaison = imgRep.get(j);
                 boolean similaire = false;
                 switch (algo) {
                     case 1:
-                        if (moy_hash.comparaisonHash(candidate, currImg)) {
+                        if (moy_hash.comparaisonHash(comparaison, currImg)) {
                             similaire = true;
                         }
                         break;
                     case 2:
-                        if (diff_hash.comparaisonHash(candidate, currImg)) {
+                        if (diff_hash.comparaisonHash(comparaison, currImg)) {
                             similaire = true;
                         }
                         break;
                     case 3:
-                        if (comp_pixels.comparaisonPixels(candidate, currImg)) {
+                        if (comp_pixels.comparaisonPixels(comparaison, currImg)) {
                             similaire = true;
                         }
                         break;
                 }
                 if (similaire) {
-                    groupe.add(candidate);
-                    prEnlever.add(candidate);
+                    groupe.add(comparaison);
+                    prEnlever.add(comparaison);
                 }
             }
             // On enleve tt les images du groupe

@@ -11,8 +11,8 @@ import java.util.ArrayList;
 public class mainConsole { // mainConsole script def dans build.gradle -> .\gradlew runConsole
     private static int seuil = 5;
     private static double prct_max = 0.2;  
-    private static String chemin_airbnb_petit = "src/main/resources/ca/qc/bdeb/sim/tp1/fichiers/airbnb-petit";
-    private static String chemin_debogage = "src/main/resources/ca/qc/bdeb/sim/tp1/fichiers/debogage";
+    private static String chemin_airbnb_petit = "./airbnb-petit";
+    private static String chemin_debogage = "./debogage";
     private static comp_pixels comp_pixels = new comp_pixels(seuil, prct_max);
     private static moy_hash moy_hash = new moy_hash(seuil);
     private static diff_hash diff_hash = new diff_hash(seuil);
