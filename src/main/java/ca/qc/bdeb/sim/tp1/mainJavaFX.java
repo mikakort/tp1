@@ -152,49 +152,23 @@ public class mainJavaFX extends Application {
         double prct_max = tolerance.equals("Faible") ? 0.1 : 0.4;
         int max_diff = tolerance.equals("Faible") ? 10 : 15;
 
-        gallerie gallerie = new gallerie(new ArrayList<img>());
-
-            File dossier = new File(cheminDossier);
-            File[] fichiers = dossier.listFiles();
-            int nbFichiers = (fichiers != null) ? fichiers.length : 0;
-            for (int j = 0; j < nbFichiers; j++) {
-                gallerie.ajouterImage(new img((fichiers[j].getPath().split("airbnb-petit")[1].substring(1)), fichiers[j].getPath()));
-            }
+        gallerie gallerie = new gallerie(cheminDossier, "airbnb-petit");
         
         // selon les params
         ArrayList<ArrayList<img>> groupes = new ArrayList<ArrayList<img>>();
         switch (methodeDetection) {
             case "Pixels":
                 groupes = gallerie.grouperSimilaires(seuil, prct_max, 1);
-                    for (int j = 0; j < groupes.size(); j++) {
-                        System.out.print("[" + (j+1) + "] ");
-                    for (int k = 0; k < groupes.get(j).size(); k++) {
-                            System.out.print(groupes.get(j).get(k).getNom() + " ");
-                        }
-                        System.out.println();
-            }
                 break;
             case "Hachage (Moyenne)":
                 groupes = gallerie.grouperSimilaires(max_diff, prct_max, 3);
-                    for (int j = 0; j < groupes.size(); j++) {
-                        System.out.print("[" + (j+1) + "] ");
-                    for (int k = 0; k < groupes.get(j).size(); k++) {
-                            System.out.print(groupes.get(j).get(k).getNom() + " ");
-                        }
-                        System.out.println();
-            }
                 break;
             case "Hachage (Différences)":
                 groupes = gallerie.grouperSimilaires(max_diff, prct_max, 2);
-                    for (int j = 0; j < groupes.size(); j++) {
-                        System.out.print("[" + (j+1) + "] ");
-                    for (int k = 0; k < groupes.get(j).size(); k++) {
-                            System.out.print(groupes.get(j).get(k).getNom() + " ");
-                        }
-                        System.out.println();
-            }
                 break;
         }
+
+
     }
 
     public static void main(String[] args) {

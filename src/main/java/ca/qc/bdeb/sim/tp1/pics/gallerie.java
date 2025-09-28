@@ -7,14 +7,20 @@ import ca.qc.bdeb.sim.tp1.algo.comp_pixels;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.io.File;
 
 // Classe pour un groupe d'images
 public class gallerie {
 
-    private List<img> images;
+    private List<img> images = new ArrayList<img>();
 
-    public gallerie(List<img> images) {
-        this.images = images;
+    public gallerie(String cheminDossier, String regex) {
+        File dossier = new File(cheminDossier);
+            File[] fichiers = dossier.listFiles();
+            int nbFichiers = (fichiers != null) ? fichiers.length : 0;
+            for (int j = 0; j < nbFichiers; j++) {
+                this.ajouterImage(new img((fichiers[j].getPath().split(regex)[1].substring(1)), fichiers[j].getPath()));
+            }
     }
 
     public void ajouterImage(img image) {

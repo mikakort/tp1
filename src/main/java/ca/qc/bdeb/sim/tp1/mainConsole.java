@@ -107,14 +107,7 @@ public class mainConsole { // mainConsole script def dans build.gradle -> .\grad
 
          for (int i = 0; i < seuils_pixels.length; i++) {
             System.out.println("Comparateur Pixels (seuil differences=" + seuils_pixels[i] + ", pourcentage differences max=" + prct_maxs_pixels[i] + "):");
-            gallerie gallerie = new gallerie(new ArrayList<img>());
-
-            File dossier = new File(chemin_airbnb_petit);
-            File[] fichiers = dossier.listFiles();
-            int nbFichiers = (fichiers != null) ? fichiers.length : 0;
-            for (int j = 0; j < nbFichiers; j++) {
-                gallerie.ajouterImage(new img((fichiers[j].getPath().split("airbnb-petit")[1].substring(1)), fichiers[j].getPath()));
-            }
+            gallerie gallerie = new gallerie(chemin_airbnb_petit, "airbnb-petit");
 
             ArrayList<ArrayList<img>> groupes = gallerie.grouperSimilaires(seuils_pixels[i], prct_maxs_pixels[i], 1);
             for (int j = 0; j < groupes.size(); j++) {
@@ -133,14 +126,7 @@ public class mainConsole { // mainConsole script def dans build.gradle -> .\grad
          int[] seuils_hachage_moyenne = {8, 16};
          for (int i = 0; i < seuils_hachage_moyenne.length; i++) {
             System.out.println("Comparateur Hachage Moyenne (cases differentes max=" + seuils_hachage_moyenne[i] + "):");
-            gallerie gallerie = new gallerie(new ArrayList<img>());
-
-            File dossier = new File(chemin_airbnb_petit);
-            File[] fichiers = dossier.listFiles();
-            int nbFichiers = (fichiers != null) ? fichiers.length : 0;
-            for (int j = 0; j < nbFichiers; j++) {
-                gallerie.ajouterImage(new img((fichiers[j].getPath().split("airbnb-petit")[1].substring(1)), fichiers[j].getPath()));
-            }
+            gallerie gallerie = new gallerie(chemin_airbnb_petit, "airbnb-petit");
 
             ArrayList<ArrayList<img>> groupes = gallerie.grouperSimilaires(seuils_hachage_moyenne[i], 0, 3);
             for (int j = 0; j < groupes.size(); j++) {
@@ -159,14 +145,7 @@ public class mainConsole { // mainConsole script def dans build.gradle -> .\grad
          int[] seuils_hachage_differences = {8, 16};
          for (int i = 0; i < seuils_hachage_differences.length; i++) {
             System.out.println("Comparateur Hachage Differences (cases differentes max=" + seuils_hachage_differences[i] + "):");
-            gallerie gallerie = new gallerie(new ArrayList<img>());
-
-            File dossier = new File(chemin_airbnb_petit);
-            File[] fichiers = dossier.listFiles();
-            int nbFichiers = (fichiers != null) ? fichiers.length : 0;
-            for (int j = 0; j < nbFichiers; j++) {
-                gallerie.ajouterImage(new img((fichiers[j].getPath().split("airbnb-petit")[1].substring(1)), fichiers[j].getPath()));
-            }
+            gallerie gallerie = new gallerie(chemin_airbnb_petit, "airbnb-petit");
 
             ArrayList<ArrayList<img>> groupes = gallerie.grouperSimilaires(seuils_hachage_differences[i], 0, 2);
             for (int j = 0; j < groupes.size(); j++) {
