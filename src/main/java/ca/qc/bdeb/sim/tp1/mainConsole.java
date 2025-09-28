@@ -5,7 +5,6 @@ import ca.qc.bdeb.sim.tp1.algo.moy_hash;
 import ca.qc.bdeb.sim.tp1.algo.diff_hash;
 import ca.qc.bdeb.sim.tp1.pics.img;
 import ca.qc.bdeb.sim.tp1.pics.gallerie;
-import java.io.File;
 import java.util.ArrayList;
 
 public class mainConsole { // mainConsole script def dans build.gradle -> .\gradlew runConsole
