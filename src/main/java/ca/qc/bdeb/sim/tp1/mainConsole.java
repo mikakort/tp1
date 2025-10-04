@@ -1,20 +1,15 @@
 package ca.qc.bdeb.sim.tp1;
 
-import ca.qc.bdeb.sim.tp1.algo.comp_pixels;
-import ca.qc.bdeb.sim.tp1.algo.moy_hash;
-import ca.qc.bdeb.sim.tp1.algo.diff_hash;
-import ca.qc.bdeb.sim.tp1.pics.img;
-import ca.qc.bdeb.sim.tp1.pics.gallerie;
+import ca.qc.bdeb.sim.tp1.algo.CompPixels;
+import ca.qc.bdeb.sim.tp1.algo.MoyHash;
+import ca.qc.bdeb.sim.tp1.algo.DiffHash;
+import ca.qc.bdeb.sim.tp1.pics.Gallerie;
 import java.util.ArrayList;
 
 public class mainConsole { // mainConsole script def dans build.gradle -> .\gradlew runConsole
-    private static int seuil = 5;
-    private static double prct_max = 0.2;  
-    private static String chemin_airbnb_petit = "./airbnb-petit";
-    private static String chemin_debogage = "./debogage";
-    private static comp_pixels comp_pixels = new comp_pixels(seuil, prct_max);
-    private static moy_hash moy_hash = new moy_hash(seuil);
-    private static diff_hash diff_hash = new diff_hash(seuil);
+    // Constantes pour les chemins (non modifiables)
+    private static final String CHEMIN_AIRBNB_PETIT = "./airbnb-petit";
+    private static final String CHEMIN_DEBOGAGE = "./debogage";
 
     public static void main(String[] args) {
 
@@ -32,16 +27,16 @@ public class mainConsole { // mainConsole script def dans build.gradle -> .\grad
          */
         int[] seuils = {5, 5, 5, 5, 128, 128, 128};
         double[] prct_maxs = {0.2, 0.2, 0.2, 0.5, 0.49, 0.50, 0.51};
-        String[] chemin_debogages = {chemin_debogage + "/pixels2.png", chemin_debogage + "/pixels3.png", chemin_debogage + "/pixels4.png", chemin_debogage + "/pixels4.png", chemin_debogage + "/pixels4.png", chemin_debogage + "/pixels4.png", chemin_debogage + "/pixels4.png"};
+        String[] chemin_debogages = {CHEMIN_DEBOGAGE + "/pixels2.png", CHEMIN_DEBOGAGE + "/pixels3.png", CHEMIN_DEBOGAGE + "/pixels4.png", CHEMIN_DEBOGAGE + "/pixels4.png", CHEMIN_DEBOGAGE + "/pixels4.png", CHEMIN_DEBOGAGE + "/pixels4.png", CHEMIN_DEBOGAGE + "/pixels4.png"};
 
         for (int i = 0; i < seuils.length; i++) {
-            seuil = seuils[i];
-            prct_max = prct_maxs[i];
-            comp_pixels = new comp_pixels(seuil, prct_max);
+            // Variables locales pour chaque itération
+            CompPixels comp_pixels = new CompPixels(seuils[i], prct_maxs[i]);
             System.out.print("seuil=" + seuils[i] + ", max pourcent=" + prct_maxs[i] + ": ");
-            System.out.print("debogage/pixels1.png et " + chemin_debogages[i].substring(chemin_debogage.length()-8) + " ");
+            System.out.print("debogage/pixels1.png et " + chemin_debogages[i].substring(CHEMIN_DEBOGAGE.length()-8) + " ");
 
-            boolean similaires = comp_pixels.comparaisonPixels(new img("image: 0", chemin_debogage + "/pixels1.png"), new img("image: 1", chemin_debogages[i]));
+            boolean similaires = comp_pixels.imagesSimilaires(CHEMIN_DEBOGAGE + "/pixels1.png", chemin_debogages[i]);
+            System.out.println(chemin_debogages[i] + " " + CHEMIN_DEBOGAGE + "/pixels1.png");
             System.out.print(similaires ? "SIMILAIRE" : "DIFFERENT");
             System.out.println();
     
@@ -53,15 +48,16 @@ public class mainConsole { // mainConsole script def dans build.gradle -> .\grad
          * • debogage/moyenne-test2.png
          * • debogage/moyenne-test3.png
          */
-        String[] chemin_moyennes = {chemin_debogage + "/moyenne-test1.png", chemin_debogage + "/moyenne-test2.png", chemin_debogage + "/moyenne-test3.png"};
+        String[] chemin_moyennes = {CHEMIN_DEBOGAGE + "/moyenne-test1.png", CHEMIN_DEBOGAGE + "/moyenne-test2.png", CHEMIN_DEBOGAGE + "/moyenne-test3.png"};
+        MoyHash moy_hash = new MoyHash(5);
         for (int i = 0; i < chemin_moyennes.length; i++) {
-                System.out.println("Post-hash: " + chemin_moyennes[i] + " :");
-                String hash = moy_hash.calculerHash(new img(("image: " + i), chemin_moyennes[i]));
+                System.out.println("Hasher: " + chemin_moyennes[i] + " :");
+                String hash = moy_hash.calculerHash(chemin_moyennes[i]);  
                 for (int j = 0; j < hash.length(); j++) {
                     if (j % 8 == 0) {
                         System.out.println();
                     }
-                    System.out.print(hash.charAt(j) == '0'? '1' : ' ');
+                    System.out.print(hash.charAt(j) == '1'? '1' : ' ');
                 }
                 System.out.println();
         }
@@ -72,15 +68,16 @@ public class mainConsole { // mainConsole script def dans build.gradle -> .\grad
          * • debogage/diff-test2.png
          * • debogage/diff-test3.png
          */
-        String[] chemin_diffs = {chemin_debogage + "/diff-test1.png", chemin_debogage + "/diff-test2.png", chemin_debogage + "/diff-test3.png"};
+        String[] chemin_diffs = {CHEMIN_DEBOGAGE + "/diff-test1.png", CHEMIN_DEBOGAGE + "/diff-test2.png", CHEMIN_DEBOGAGE + "/diff-test3.png"};
+        DiffHash diff_hash = new DiffHash(5);
         for (int i = 0; i < chemin_diffs.length; i++) {
                 System.out.println("Post-hash: " + chemin_diffs[i] + " :");
-                String hash = diff_hash.calculerHash(new img(("image: " + i), chemin_diffs[i]));
+                String hash = diff_hash.calculerHash(chemin_diffs[i]);
                 for (int j = 0; j < hash.length(); j++) {
                     if (j % 8 == 0) {
                         System.out.println();
                     }
-                    System.out.print(hash.charAt(j) == '0'? '1' : ' ');
+                    System.out.print(hash.charAt(j) == '1'? '1' : ' ');
                 }
                 System.out.println();
         }
@@ -106,13 +103,13 @@ public class mainConsole { // mainConsole script def dans build.gradle -> .\grad
 
          for (int i = 0; i < seuils_pixels.length; i++) {
             System.out.println("Comparateur Pixels (seuil differences=" + seuils_pixels[i] + ", pourcentage differences max=" + prct_maxs_pixels[i] + "):");
-            gallerie gallerie = new gallerie(chemin_airbnb_petit, "airbnb-petit");
+            Gallerie gallerie = new Gallerie(CHEMIN_AIRBNB_PETIT, "airbnb-petit");
 
-            ArrayList<ArrayList<img>> groupes = gallerie.grouperSimilaires(seuils_pixels[i], prct_maxs_pixels[i], 1);
+            ArrayList<ArrayList<String>> groupes = gallerie.grouperSimilaires(new CompPixels(seuils_pixels[i], prct_maxs_pixels[i]));
             for (int j = 0; j < groupes.size(); j++) {
                 System.out.print("[" + (j+1) + "] ");
                 for (int k = 0; k < groupes.get(j).size(); k++) {
-                    System.out.print((k + 1) + ". " + groupes.get(j).get(k).getNom() + " ");
+                    System.out.print((k + 1) + ". " + groupes.get(j).get(k).split("t\\\\")[1] + " ");
                     }
                      System.out.println();
             }
@@ -125,13 +122,13 @@ public class mainConsole { // mainConsole script def dans build.gradle -> .\grad
          int[] seuils_hachage_moyenne = {8, 16};
          for (int i = 0; i < seuils_hachage_moyenne.length; i++) {
             System.out.println("Comparateur Hachage Moyenne (cases differentes max=" + seuils_hachage_moyenne[i] + "):");
-            gallerie gallerie = new gallerie(chemin_airbnb_petit, "airbnb-petit");
+            Gallerie gallerie = new Gallerie(CHEMIN_AIRBNB_PETIT, "airbnb-petit");
 
-            ArrayList<ArrayList<img>> groupes = gallerie.grouperSimilaires(seuils_hachage_moyenne[i], 0, 3);
+            ArrayList<ArrayList<String>> groupes = gallerie.grouperSimilaires(new MoyHash(seuils_hachage_moyenne[i]));
             for (int j = 0; j < groupes.size(); j++) {
                 System.out.print("[" + (j+1) + "] ");
                 for (int k = 0; k < groupes.get(j).size(); k++) {
-                    System.out.print(groupes.get(j).get(k).getNom() + " ");
+                    System.out.print(groupes.get(j).get(k).split("t\\\\")[1] + " ");
                     }
                      System.out.println();
             }
@@ -144,13 +141,13 @@ public class mainConsole { // mainConsole script def dans build.gradle -> .\grad
          int[] seuils_hachage_differences = {8, 16};
          for (int i = 0; i < seuils_hachage_differences.length; i++) {
             System.out.println("Comparateur Hachage Differences (cases differentes max=" + seuils_hachage_differences[i] + "):");
-            gallerie gallerie = new gallerie(chemin_airbnb_petit, "airbnb-petit");
+            Gallerie gallerie = new Gallerie(CHEMIN_AIRBNB_PETIT, "airbnb-petit");
 
-            ArrayList<ArrayList<img>> groupes = gallerie.grouperSimilaires(seuils_hachage_differences[i], 0, 2);
+            ArrayList<ArrayList<String>> groupes = gallerie.grouperSimilaires(new DiffHash(seuils_hachage_differences[i]));
             for (int j = 0; j < groupes.size(); j++) {
                 System.out.print("[" + (j+1) + "] ");
                 for (int k = 0; k < groupes.get(j).size(); k++) {
-                    System.out.print(groupes.get(j).get(k).getNom() + " ");
+                    System.out.print(groupes.get(j).get(k).split("t\\\\")[1] + " ");
                     }
                      System.out.println();
             }

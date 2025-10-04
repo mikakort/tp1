@@ -14,8 +14,10 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import java.io.File;
 import java.util.ArrayList;
-import ca.qc.bdeb.sim.tp1.pics.gallerie;
-import ca.qc.bdeb.sim.tp1.pics.img;
+import ca.qc.bdeb.sim.tp1.algo.CompPixels;
+import ca.qc.bdeb.sim.tp1.algo.MoyHash;
+import ca.qc.bdeb.sim.tp1.algo.DiffHash;
+import ca.qc.bdeb.sim.tp1.pics.Gallerie;
 
 public class mainJavaFX extends Application {
     
@@ -24,7 +26,7 @@ public class mainJavaFX extends Application {
     private ToggleGroup groupeTolerance;
     
     // Variables pour la gallerie
-    private ArrayList<ArrayList<img>> groupesDoublons;
+    private ArrayList<ArrayList<String>> groupesDoublons;
     private ImageView vueImagePrincipale;
     private HBox boiteCarrousel;
     private ScrollPane defileCarrousel;
@@ -32,7 +34,7 @@ public class mainJavaFX extends Application {
     private int groupeSelectionne_i = 0;
 
     @Override
-    public void start(Stage fenetre) {
+    public void start(Stage fenetre) { // Initialiser la fenetre
         HBox boitePrincipale = new HBox(20);
         boitePrincipale.setPadding(new Insets(20));
         boitePrincipale.setStyle("background-color:rgb(196, 196, 196);");
@@ -48,7 +50,7 @@ public class mainJavaFX extends Application {
         fenetre.show();
     }
 
-    private VBox initSectionLogique(Stage fenetre) {
+    private VBox initSectionLogique(Stage fenetre) { // Initialiser la section logique
         VBox panneauGauche = new VBox(5);
         panneauGauche.setPrefWidth(300);
 
@@ -98,7 +100,7 @@ public class mainJavaFX extends Application {
 
         return panneauGauche;
     }
-    private VBox initSectionGallerie() {
+    private VBox initSectionGallerie() { // Initialiser la section gallerie
         VBox panneauDroit = new VBox();
         panneauDroit.setAlignment(Pos.TOP_LEFT);
         panneauDroit.setPrefWidth(450);
@@ -136,7 +138,7 @@ public class mainJavaFX extends Application {
         return panneauDroit;
     }
 
-    private String choisirDossier(Stage fenetre) {
+    private String choisirDossier(Stage fenetre) { // Ouvrir le dossier
         DirectoryChooser selecteur = new DirectoryChooser();
         selecteur.setTitle("Sélectionnez un dossier d'images");
         selecteur.setInitialDirectory(new File("."));
@@ -148,7 +150,7 @@ public class mainJavaFX extends Application {
         return null;
     }
     
-    private void traiterDossier(String chemin) {
+    private void traiterDossier(String chemin) { // Chercher le dossier et trier les images (doublons)
         String methode = comboDetection.getValue();
         RadioButton tolChoisi = (RadioButton) groupeTolerance.getSelectedToggle();
         String t = tolChoisi.getText();
@@ -157,24 +159,24 @@ public class mainJavaFX extends Application {
         int maxDiff = t.equals("Faible") ? 10 : 15;
 
         File dossier = new File(chemin);
-        gallerie gallerie = new gallerie(chemin, dossier.getName());
+        Gallerie gallerie = new Gallerie(chemin, dossier.getName());
 
         groupesDoublons = new ArrayList<>();
         switch (methode) {
             case "Pixels":
-                groupesDoublons = gallerie.grouperSimilaires(seuil, prctMax, 1);
+                groupesDoublons = gallerie.grouperSimilaires(new CompPixels(seuil, prctMax));
                 break;
             case "Hachage (Moyenne)":
-                groupesDoublons = gallerie.grouperSimilaires(maxDiff, prctMax, 3);
+                groupesDoublons = gallerie.grouperSimilaires(new MoyHash(maxDiff));
                 break;
             case "Hachage (Différences)":
-                groupesDoublons = gallerie.grouperSimilaires(maxDiff, prctMax, 2);
+                groupesDoublons = gallerie.grouperSimilaires(new DiffHash(maxDiff));
                 break;
         }
         mettreAJourGallerie();
-    }
+    }   
     
-    private void mettreAJourGallerie() {
+    private void mettreAJourGallerie() { // On event, on vide la gallerie et on update
         if (groupesDoublons == null || groupesDoublons.isEmpty()) return;
         boiteCarrousel.getChildren().clear();
         listeDoublons.getChildren().clear();
@@ -182,12 +184,12 @@ public class mainJavaFX extends Application {
         mettreAJourImagePrincipale();
 
         for (int i = 0; i < groupesDoublons.size(); i++) {
-            ArrayList<img> groupe = groupesDoublons.get(i);
+            ArrayList<String> groupe = groupesDoublons.get(i);
             if (!groupe.isEmpty()) {
-                img imgPremiere = groupe.get(0);
+                String imgPremiere = groupe.get(0);
                 ImageView vueCarrousel = new ImageView();
                 try {
-                    Image image = new Image(new File(imgPremiere.getChemin()).toURI().toString());
+                    Image image = new Image(new File(imgPremiere).toURI().toString());
                     vueCarrousel.setImage(image);
                     vueCarrousel.setFitWidth(60);
                     vueCarrousel.setFitHeight(60);
@@ -201,7 +203,7 @@ public class mainJavaFX extends Application {
                     });
                     boiteCarrousel.getChildren().add(vueCarrousel);
                 } catch (Exception e) {
-                    System.err.println("Erreur lors du chargement de l'image: " + imgPremiere.getChemin());
+                    System.err.println("Erreur lors du chargement de l'image: " + imgPremiere);
                 }
             }
         }
@@ -211,22 +213,22 @@ public class mainJavaFX extends Application {
         mettreAJourListeDoublons();
     }
     
-    private void mettreAJourImagePrincipale() {
+    private void mettreAJourImagePrincipale() { // On event, on update l'image principale
         if (groupesDoublons != null && groupeSelectionne_i < groupesDoublons.size() && !groupesDoublons.get(groupeSelectionne_i).isEmpty()) {
-            img imgSelect = groupesDoublons.get(groupeSelectionne_i).get(0);
+            String imgSelect = groupesDoublons.get(groupeSelectionne_i).get(0);    
             try {
-                Image image = new Image(new File(imgSelect.getChemin()).toURI().toString());
+                Image image = new Image(new File(imgSelect).toURI().toString());
                 vueImagePrincipale.setImage(image);
             } catch (Exception e) {
-                System.err.println("Erreur lors du chargement de l'image principale: " + imgSelect.getChemin());
+                System.err.println("Erreur lors du chargement de l'image principale: " + imgSelect);
             }
         }
     }
     
-    private void mettreAJourListeDoublons() {
+    private void mettreAJourListeDoublons() { // On event, on vide la liste et on update
         listeDoublons.getChildren().clear();
         if (groupesDoublons != null && groupeSelectionne_i < groupesDoublons.size()) {
-            ArrayList<img> groupeSelect = groupesDoublons.get(groupeSelectionne_i);
+            ArrayList<String> groupeSelect = groupesDoublons.get(groupeSelectionne_i);
             Label doublonsLabel = new Label("Doublons dans ce groupe:");
             doublonsLabel.setFont(Font.font("Arial", FontWeight.BOLD, 12));
             listeDoublons.getChildren().add(doublonsLabel);
@@ -240,21 +242,23 @@ public class mainJavaFX extends Application {
             HBox boiteImages = new HBox(10);
             boiteImages.setPadding(new Insets(5));
 
-            for (img image : groupeSelect) {
+            for (String image : groupeSelect) { // on fait un conteneur pour chaque image
                 VBox conteneur = new VBox(5);
                 conteneur.setAlignment(Pos.CENTER);
                 ImageView vueDoublon = new ImageView();
                 try {
-                    Image imgJavaFX = new Image(new File(image.getChemin()).toURI().toString());
+                    Image imgJavaFX = new Image(new File(image).toURI().toString());
                     vueDoublon.setImage(imgJavaFX);
                     vueDoublon.setFitWidth(80);
                     vueDoublon.setFitHeight(80);
                     vueDoublon.setPreserveRatio(true);
                     vueDoublon.setStyle("-fx-border-color: #ccc; -fx-border-width: 1;");
                 } catch (Exception e) {
-                    System.err.println("Erreur lors du chargement de l'image dupliquée: " + image.getChemin());
+                    System.err.println("Erreur lors du chargement de l'image dupliquée: " + image);
                 }
-                Label nom = new Label(image.getNom());
+
+                // On nettoie le chemin pour slm garder le nom
+                Label nom = new Label(image.split("\\\\")[image.split("\\\\").length - 1]);
                 nom.setFont(Font.font("Arial", 8));
                 nom.setMaxWidth(80);
                 nom.setWrapText(true);

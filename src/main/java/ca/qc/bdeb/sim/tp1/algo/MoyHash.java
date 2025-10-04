@@ -4,24 +4,23 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import ca.qc.bdeb.sim.tp1.pics.GestionnaireImages;
-import ca.qc.bdeb.sim.tp1.pics.img;
 
 // Ce qu'il faut faire:
 // 1. Lire les images
 // 2. Hasher les images en fct de la moyenne des pixels
 // 3. Comparer les hashs des images
 // 4. Retourner le resultat (true si similaires, false si differents)
-public class moy_hash {
+public class MoyHash extends ComparateurImages {
 
     private int seuil;
 
-    public moy_hash(int seuil) {
+    public MoyHash(int seuil) {
         this.seuil = seuil;
     }
 
-    public String calculerHash(img a) {
+    public String calculerHash(String ch) {
         try {
-            BufferedImage img = GestionnaireImages.lireImage(a.getChemin());
+            BufferedImage img = GestionnaireImages.lireImage(ch);
 
             // Redimensionner 8x8
             img = GestionnaireImages.redimensionner(img, 8, 8);
@@ -49,19 +48,15 @@ public class moy_hash {
             }
             return hash.toString();
         } catch (IOException e) {
-            System.out.println("Erreur lors du calcul du hash");
-            return "";
+            // Propager l'erreur pour une gestion appropriée par l'appelant
+            throw new RuntimeException("Erreur lors du calcul du hash: " + e.getMessage(), e);
         }
     }
 
-    public boolean comparaisonHash(img a, img b) {
-        String hash1 = calculerHash(a);
-        String hash2 = calculerHash(b);
-
-        // vide? return false
-        if (hash1.isEmpty() || hash2.isEmpty()) {
-            return false;
-        }
+    @Override
+    public boolean imagesSimilaires(String ch1, String ch2) {
+        String hash1 = calculerHash(ch1);
+        String hash2 = calculerHash(ch2);
 
         // Compter les diffs
         int diff = 0;

@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import ca.qc.bdeb.sim.tp1.pics.GestionnaireImages;
-import ca.qc.bdeb.sim.tp1.pics.img;
 
 // Classe pour comparer les pixels des images
 // Ce qu'il faut faire:
@@ -12,22 +11,22 @@ import ca.qc.bdeb.sim.tp1.pics.img;
 // 2. Convertir les images en matrices de pixels  (avec GestionnaireImages -> toPixels)
 // 3. Comparer les pixels des images (loop, cmb different??) 
 // 4. Retourner le resultat (true si similaires, false si differents -> dependant du seuil et du pourcentage max)
-public class comp_pixels {
+public class CompPixels extends ComparateurImages {
 
     private int seuil;
     private double prct_max;
 
-    public comp_pixels(int seuil, double prct_max) {
+    public CompPixels(int seuil, double prct_max) {
         this.seuil = seuil;
         this.prct_max = prct_max;
     }
 
     // Comparer les pixels des images (true si similaires, false si differents
-    public boolean comparaisonPixels(img a, img b) {
+    public boolean imagesSimilaires(String ch1, String ch2) {
         try {
             // Charger les images
-            BufferedImage image1 = GestionnaireImages.lireImage(a.getChemin());
-            BufferedImage image2 = GestionnaireImages.lireImage(b.getChemin());
+            BufferedImage image1 = GestionnaireImages.lireImage(ch1);
+            BufferedImage image2 = GestionnaireImages.lireImage(ch2);
 
             // get taille des images
             int largeur = Math.min(image1.getWidth(), image2.getWidth());
@@ -57,8 +56,8 @@ public class comp_pixels {
 
             return prct_diff <= prct_max;
         } catch (IOException e) {
-            System.out.println("Erreur lors de la comparaison des images");
-            return false;
+            // En cas d'erreur de lecture, on considère les images comme différentes
+            throw new RuntimeException("Erreur lors de la lecture des images: " + e.getMessage(), e);
         }
     }
 }

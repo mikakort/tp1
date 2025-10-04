@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import ca.qc.bdeb.sim.tp1.pics.GestionnaireImages;
-import ca.qc.bdeb.sim.tp1.pics.img;
 
 // Classe pour comparer les hashs des images
 // Ce qu'il faut faire:
@@ -12,17 +11,17 @@ import ca.qc.bdeb.sim.tp1.pics.img;
 // 2. Hasher les images
 // 3. Comparer les hashs des images
 // 4. Retourner le resultat (true si similaires, false si differents)
-public class diff_hash {
+public class DiffHash extends ComparateurImages {
 
     private int seuil;
 
-    public diff_hash(int seuil) {
+    public DiffHash(int seuil) {
         this.seuil = seuil;
     }
 
-    public String calculerHash(img a) {
+    public String calculerHash(String ch) {
         try {
-            BufferedImage img = GestionnaireImages.lireImage(a.getChemin());
+            BufferedImage img = GestionnaireImages.lireImage(ch);
 
             // Redimensionner 8x8
             img = GestionnaireImages.redimensionner(img, 8, 8);
@@ -55,19 +54,14 @@ public class diff_hash {
 
             return hash.toString();
         } catch (IOException e) {
-            System.out.println("Erreur lors du calcul du hash");
-            return "";
+            // Propager l'erreur pour une gestion appropriée par l'appelant
+            throw new RuntimeException("Erreur lors du calcul du hash: " + e.getMessage(), e);
         }
     }
 
-    public boolean comparaisonHash(img a, img b) {
-        String hash1 = calculerHash(a);
-        String hash2 = calculerHash(b);
-
-        // vide? return false
-        if (hash1.isEmpty() || hash2.isEmpty()) {
-            return false;
-        }
+    public boolean imagesSimilaires(String ch1, String ch2) {
+        String hash1 = calculerHash(ch1);
+        String hash2 = calculerHash(ch2);
 
         // Compter les diffs
         int diff = 0;

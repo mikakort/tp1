@@ -1,8 +1,6 @@
 package ca.qc.bdeb.sim.tp1.pics;
 
-import ca.qc.bdeb.sim.tp1.algo.moy_hash;
-import ca.qc.bdeb.sim.tp1.algo.diff_hash;
-import ca.qc.bdeb.sim.tp1.algo.comp_pixels;
+import ca.qc.bdeb.sim.tp1.algo.ComparateurImages;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,20 +8,20 @@ import java.util.List;
 import java.io.File;
 
 // Classe pour un groupe d'images
-public class gallerie {
+public class Gallerie {
 
-    private List<img> images = new ArrayList<img>();
+    private List<String> images = new ArrayList<String>();
 
-    public gallerie(String cheminDossier, String regex) {
-        File dossier = new File(cheminDossier);
-            File[] fichiers = dossier.listFiles();
-            int nbFichiers = (fichiers != null) ? fichiers.length : 0;
-            for (int j = 0; j < nbFichiers; j++) {
-                this.ajouterImage(new img((fichiers[j].getPath().split(regex)[1].substring(1)), fichiers[j].getPath()));
-            }
+   public Gallerie(String cheminDossier, String regex) {
+    File dossier = new File(cheminDossier);
+    File[] fichiers = dossier.listFiles();
+    int nbFichiers = (fichiers != null) ? fichiers.length : 0;
+    for (int j = 0; j < nbFichiers; j++) {
+        this.ajouterImage(fichiers[j].getPath());
     }
+}
 
-    public void ajouterImage(img image) {
+    public void ajouterImage(String image) {
         images.add(image);
     }
 
@@ -34,21 +32,21 @@ public class gallerie {
     public void trierAlphabetique() {
         String[] noms = new String[images.size()];
         for (int i = 0; i < images.size(); i++) {
-            noms[i] = images.get(i).getNom();
+            noms[i] = images.get(i);
         }
        Arrays.sort(noms);
 
        this.images.clear();
        for (int i = 0; i < images.size(); i++) {
-        this.images.add(new img(noms[i], images.get(i).getChemin()));
+        this.images.add(noms[i]);
        }
 
-        img temp;
+        String temp;
         for (int i = 0; i < images.size(); i++) {
             for (int j = i + 1; j < images.size(); j++) {
               
                 // to compare one string with other strings
-                if (images.get(i).getNom().compareTo(images.get(j).getNom()) > 0) {
+                if (images.get(i).compareTo(images.get(j)) > 0) {
                     // swapping
                     temp = images.get(i);
                     images.set(i, images.get(j));
@@ -56,50 +54,25 @@ public class gallerie {
                 }
             }
         }
-        System.out.println("\nTriage fini\n");
     }
 
-    public ArrayList<ArrayList<img>> grouperSimilaires(int diff, double prct_max, int algo) {
-        algo = (algo < 4 && algo > 0) ? algo : 1;
-        ArrayList<ArrayList<img>> groupes = new ArrayList<ArrayList<img>>();
-        List<img> imgRep = new ArrayList<img>(images);
+    public ArrayList<ArrayList<String>> grouperSimilaires(ComparateurImages algo) {
+        ArrayList<ArrayList<String>> groupes = new ArrayList<ArrayList<String>>();
+        List<String> imgRep = new ArrayList<String>(images);
         this.trierAlphabetique();
 
-        moy_hash moy_hash = new moy_hash(diff);
-        diff_hash diff_hash = new diff_hash(diff);
-        comp_pixels comp_pixels = new comp_pixels(diff, prct_max);
-
-
         while (imgRep.size() > 0) {
-            img currImg = imgRep.get(0);
-            ArrayList<img> groupe = new ArrayList<img>();
+            String currImg = imgRep.get(0);
+            ArrayList<String> groupe = new ArrayList<String>();
             groupe.add(currImg);
 
             // Collection d'images a enlever (pas par indexe cette fois)
-            List<img> prEnlever = new ArrayList<img>();
+            List<String> prEnlever = new ArrayList<String>();
             // Commence j=1 car currImg est j=0 et est deja dans le groupe
             for (int j = 1; j < imgRep.size(); j++) {
-                img comparaison = imgRep.get(j);
-                boolean similaire = false;
-                switch (algo) {
-                    case 1:
-                        if (moy_hash.comparaisonHash(comparaison, currImg)) {
-                            similaire = true;
-                        }
-                        break;
-                    case 2:
-                        if (diff_hash.comparaisonHash(comparaison, currImg)) {
-                            similaire = true;
-                        }
-                        break;
-                    case 3:
-                        if (comp_pixels.comparaisonPixels(comparaison, currImg)) {
-                            similaire = true;
-                        }
-                        break;
-                }
-                if (similaire) {
-                    groupe.add(comparaison);
+                String comparaison = imgRep.get(j);
+                if (algo.imagesSimilaires(comparaison, currImg)) {
+                     groupe.add(comparaison);
                     prEnlever.add(comparaison);
                 }
             }
@@ -113,12 +86,8 @@ public class gallerie {
         return groupes;
     }
     
-    
-
-    
-
     // get/set
-    public List<img> getImages() {
+    public List<String> getImages() {
         return images;
     }
 
@@ -126,18 +95,19 @@ public class gallerie {
         return images.size();
     }
 
-    public void setImages(List<img> images) {
+    public void setImages(List<String> images) {
         this.images = images;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("gallerie{\n");
-        for (img image : images) {
+        sb.append("Gallerie{\n");
+        for (String image : images) {
             sb.append(image.toString()).append("\n");
         }
         sb.append("}");
         return sb.toString();
     }
 }
+
